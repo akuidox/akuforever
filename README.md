@@ -30,8 +30,8 @@ Forever Economy n'a pas d'API publique, d'où Forever AH (même source Blizzard,
    npx wrangler secret put BNET_CLIENT_SECRET
    npm run deploy
    ```
-   Wrangler affiche l'URL `https://forever-crafter.<ton-compte>.workers.dev` : c'est le lien à partager.
-   Domaine perso (ex. `wow.samuelurbain.com`) : Cloudflare → Workers → forever-crafter → Settings → Domains.
+   Wrangler affiche l'URL `https://akuforever.<ton-compte>.workers.dev` : c'est le lien à partager.
+   Domaine perso (ex. `wow.samuelurbain.com`) : Cloudflare → Workers → akuforever → Settings → Domains.
 4. **Test local** : `npm run dev` (crée un fichier `.dev.vars` avec `BNET_CLIENT_ID=...` et `BNET_CLIENT_SECRET=...`, ne le committe pas).
    Tests du calcul : `npm test`.
 
@@ -55,3 +55,10 @@ Lien direct partageable : `https://…/?name=Ada%20Brightwood&region=us`
 - WoW Forever a 5 HV par faction et par région dans l'API ; « Tous les HV de la région » est le choix par défaut.
 
 Site de fans, non affilié à Blizzard Entertainment. Crédite Forever AH, l'API Battle.net et MetaBot.gg si tu le rends public.
+
+## Déploiement automatique depuis GitHub
+
+Cloudflare → **Workers & Pages** → **Create** → **Import a repository** → `akuidox/akuforever`.
+Garde le nom `akuforever` (il doit correspondre à `name` dans `wrangler.toml`), commande de déploiement `npx wrangler deploy`.
+Ensuite, dans le Worker → **Settings → Variables and Secrets**, ajoute `BNET_CLIENT_ID` et `BNET_CLIENT_SECRET` (type *Secret*).
+Chaque `git push` sur `main` redéploie le site.

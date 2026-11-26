@@ -1,4 +1,4 @@
-name = "forever-crafter"
+name = "akuforever"
 main = "src/worker.js"
 compatibility_date = "2026-11-01"
 
