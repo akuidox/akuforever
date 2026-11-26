@@ -1,0 +1,1 @@
+Copie ici forever-recipes-skill.json renommé en recipes.json (voir README).

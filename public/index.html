@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forever Crafter — monter ses métiers et faire du gold</title>
+<style>
+  :root {
+    --bg: #14110d; --panel: #1f1a14; --panel2: #2a231b; --line: #3d3326;
+    --text: #efe6d4; --muted: #a8977b; --gold: #f2c35b; --orange: #ff8040; --yellow: #ffe14d;
+    --green: #5fd35f; --grey: #8a8a8a; --red: #ff6b5b; --epic: #c37bff; --rare: #4ea3ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(ellipse at top, #2a2015, var(--bg) 60%); color: var(--text);
+         font: 15px/1.5 "Segoe UI", system-ui, sans-serif; min-height: 100vh; }
+  header { padding: 28px 20px 8px; max-width: 1150px; margin: auto; }
+  h1 { font-family: Georgia, "Times New Roman", serif; color: var(--gold); margin: 0; font-size: 30px; letter-spacing: .5px; }
+  h1 small { color: var(--muted); font: 14px "Segoe UI", sans-serif; margin-left: 8px; }
+  main { max-width: 1150px; margin: auto; padding: 0 20px 40px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+  form.search { display: grid; grid-template-columns: 2fr 90px 1.4fr auto; gap: 10px; align-items: end; }
+  label { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
+  input, select, button { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line);
+                          border-radius: 7px; padding: 8px 10px; width: 100%; }
+  input:focus, select:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+  button { background: linear-gradient(#8a5a1c, #6a4413); border-color: #a4732e; cursor: pointer; font-weight: 600; width: auto; padding: 8px 18px; }
+  button:hover { filter: brightness(1.15); }
+  button.ghost { background: transparent; border-color: var(--line); font-weight: 400; }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .hero { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .hero h2 { margin: 0; font-family: Georgia, serif; font-size: 24px; }
+  .muted { color: var(--muted); }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .tab { background: var(--panel2); border: 1px solid var(--line); padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 400; }
+  .tab.on { background: #4a3517; border-color: var(--gold); color: var(--gold); }
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: end; }
+  .check { display: flex; gap: 8px; align-items: center; color: var(--text); text-transform: none; font-size: 14px; letter-spacing: 0; }
+  .check input { width: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .5px;
+       border-bottom: 1px solid var(--line); padding: 8px 6px; position: sticky; top: 0; background: var(--panel); }
+  td { border-bottom: 1px solid #2c251c; padding: 7px 6px; vertical-align: top; }
+  td.num, th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .scroll { max-height: 560px; overflow: auto; }
+  .pos { color: var(--green); } .neg { color: var(--red); }
+  .tag { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 10px; border: 1px solid var(--line); color: var(--muted); margin-left: 4px; }
+  .tag.buy { color: var(--orange); border-color: #7a4a2a; }
+  .tag.new { color: var(--gold); border-color: #6b5420; }
+  .trainer { color: var(--gold); font-size: 12px; }
+  .sk { display: inline-flex; gap: 4px; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .sk b { font-weight: 600; } .sk .o{color:var(--orange)} .sk .y{color:var(--yellow)} .sk .g{color:var(--green)} .sk .x{color:var(--grey)}
+  .q-EPIC { color: var(--epic); } .q-RARE { color: var(--rare); } .q-UNCOMMON { color: var(--green); }
+  .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0 4px; }
+  .stat { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .stat .v { font-size: 20px; font-weight: 600; color: var(--gold); }
+  .err { background: #3a1915; border: 1px solid #7a2d24; color: #ffc9c0; padding: 10px 14px; border-radius: 8px; }
+  .note { font-size: 13px; color: var(--muted); }
+  details summary { cursor: pointer; color: var(--gold); margin: 8px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  h3 { font-family: Georgia, serif; color: var(--gold); margin: 6px 0 8px; font-size: 19px; }
+  footer { max-width: 1150px; margin: auto; padding: 10px 20px 30px; font-size: 12px; color: var(--muted); }
+  footer a { color: var(--muted); }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--gold); border-radius: 50%; animation: sp 0.8s linear infinite; vertical-align: -2px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  @media (max-width: 760px) { form.search { grid-template-columns: 1fr 1fr; } form.search .name { grid-column: 1 / -1; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Forever Crafter <small>WoW Forever · métiers & gold</small></h1>
+</header>
+<main>
+  <section class="card">
+    <form class="search" id="f">
+      <div class="name"><label for="name">Ton perso (prénom et nom)</label><input id="name" placeholder="ex. Ada Brightwood" autocomplete="off" required></div>
+      <div><label for="region">Région</label>
+        <select id="region"><option value="us">US</option><option value="eu">EU</option><option value="kr">KR</option><option value="tw">TW</option></select></div>
+      <div><label for="house">Hôtel des ventes (prix)</label><select id="house"><option value="">Chargement…</option></select></div>
+      <button type="submit">Valider</button>
+    </form>
+    <p class="note" style="margin:10px 0 0">Pas de perso sous la main ? <a href="#" id="manual" style="color:var(--gold)">Choisir un métier et un skill à la main</a>.</p>
+  </section>
+
+  <div id="out"></div>
+</main>
+<footer id="foot">
+  Prix : <a href="https://forever-ah.com" target="_blank" rel="noopener">Forever AH</a> (API Battle.net de Blizzard, mise à jour horaire).
+  Perso et métiers : API Battle.net. Seuils de skill : extraits de <a href="https://metabot.gg/en/wow-forever/professions" target="_blank" rel="noopener">MetaBot.gg</a> (client WoW Forever) ; un * signale un seuil d'apprentissage estimé.
+  Site de fans, non affilié à Blizzard Entertainment.
+</footer>
+
+<script type="module">
+import { PROFESSIONS, parseRecipes, enrich, plan, goldList, money, skillChance } from "./planner.js";
+
+const $ = (s) => document.querySelector(s);
+const out = $("#out");
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const state = { recipes: null, houses: [], craftCache: new Map(), char: null, profKey: null, skills: {} };
+
+async function api(path) {
+  const r = await fetch(path);
+  const data = await r.json().catch(() => ({ error: `Erreur ${r.status}` }));
+  if (!r.ok || data.error) throw new Error(data.error || `Erreur ${r.status}`);
+  return data;
+}
+
+async function loadRecipes() {
+  if (state.recipes) return state.recipes;
+  const raw = await fetch("data/recipes.json").then((r) => { if (!r.ok) throw new Error("Fichier data/recipes.json absent (voir README)."); return r.json(); });
+  state.recipes = {};
+  for (const k of Object.keys(PROFESSIONS)) if (raw[k]) state.recipes[k] = parseRecipes(raw[k]);
+  return state.recipes;
+}
+
+async function loadHouses() {
+  try {
+    const d = await api("/api/houses");
+    state.houses = (d.houses || d.rows || d || []);
+  } catch (e) { state.houses = []; }
+  fillHouses();
+}
+function fillHouses() {
+  const region = $("#region").value;
+  const list = state.houses.filter((h) => h.region === region);
+  const count = {};
+  const saved = localStorageGet("house:" + region);
+  $("#house").innerHTML = list.length ? list.map((h) => {
+    let label = h.house_type === "unified" ? "Tous les HV de la région" : h.name;
+    if (h.house_type !== "unified") { count[h.name] = (count[h.name] || 0) + 1; label += ` #${count[h.name]}`; }
+    return `<option value="${h.house_key}">${esc(label)}</option>`;
+  }).join("") : `<option value="17">Tous les HV US</option>`;
+  const unified = list.find((h) => h.house_type === "unified");
+  $("#house").value = saved && list.some((h) => String(h.house_key) === saved) ? saved : (unified ? unified.house_key : $("#house").value);
+}
+function localStorageGet(k) { try { return localStorage.getItem("fc:" + k); } catch { return null; } }
+function localStorageSet(k, v) { try { localStorage.setItem("fc:" + k, v); } catch {} }
+
+async function craftData(house, profId) {
+  const key = house + ":" + profId;
+  if (!state.craftCache.has(key)) state.craftCache.set(key, api(`/api/crafting?house=${house}&profession=${profId}`));
+  try { return await state.craftCache.get(key); }
+  catch (e) { state.craftCache.delete(key); throw e; }
+}
+
+function profKeyFor(p) {
+  for (const [k, v] of Object.entries(PROFESSIONS)) if (v.id === p.id) return k;
+  const n = (p.name || "").toLowerCase();
+  const fr = { "travail du cuir": "leatherworking", forge: "blacksmithing", couture: "tailoring", "ingénierie": "engineering",
+               enchantement: "enchanting", alchimie: "alchemy", cuisine: "cooking", secourisme: "first-aid", minage: "mining" };
+  return fr[n] || Object.keys(PROFESSIONS).find((k) => n.includes(k.replace("-", " "))) || null;
+}
+
+// ---------- rendu ----------
+function renderChar() {
+  const c = state.char;
+  const crafts = c.professions.map((p) => ({ ...p, key: profKeyFor(p) })).filter((p) => p.key);
+  const others = c.professions.filter((p) => !profKeyFor(p));
+  if (!state.profKey || !crafts.some((p) => p.key === state.profKey)) state.profKey = crafts[0]?.key || null;
+  for (const p of crafts) if (state.skills[p.key] == null) state.skills[p.key] = p.skill ?? 1;
+  out.innerHTML = `
+  <section class="card">
+    <div class="hero">
+      <div><h2>${esc(c.name)}</h2>
+        <div class="muted">${[c.level ? "Niveau " + c.level : "", c.race, c.class, c.faction, c.guild ? `<${c.guild}>` : ""].filter(Boolean).map(esc).join(" · ")}</div></div>
+      <div class="muted" style="text-align:right">${others.map((p) => `${esc(p.name)} ${p.skill ?? "?"}/${p.max ?? "?"}`).join(" · ")}</div>
+    </div>
+    <div class="tabs">${crafts.map((p) => `<button class="tab ${p.key === state.profKey ? "on" : ""}" data-k="${p.key}">${esc(PROFESSIONS[p.key].fr)} · ${p.skill ?? "?"}/${p.max ?? "?"}</button>`).join("")}
+      <button class="tab" data-k="__other">+ autre métier</button></div>
+    ${crafts.length ? "" : `<p class="note">Aucun métier de fabrication trouvé sur ce perso. Choisis-en un avec « + autre métier ».</p>`}
+  </section>
+  <div id="prof"></div>`;
+  out.querySelectorAll(".tab").forEach((b) => b.onclick = () => {
+    if (b.dataset.k === "__other") return pickOther();
+    state.profKey = b.dataset.k; renderChar();
+  });
+  if (state.profKey) renderProf();
+}
+
+function pickOther() {
+  const opts = Object.entries(PROFESSIONS).map(([k, v]) => `<option value="${k}">${v.fr}</option>`).join("");
+  $("#prof").innerHTML = `<section class="card"><div class="controls">
+    <div><label>Métier</label><select id="ok">${opts}</select></div>
+    <div><label>Skill actuel</label><input id="os" type="number" min="1" max="300" value="1"></div>
+    <div><button id="og">Voir le plan</button></div></div></section>`;
+  $("#og").onclick = () => {
+    const k = $("#ok").value; state.skills[k] = clampSkill($("#os").value);
+    if (!state.char) state.char = { name: "Mode manuel", professions: [] };
+    if (!state.char.professions.some((p) => profKeyFor(p) === k)) state.char.professions.push({ id: PROFESSIONS[k].id, name: PROFESSIONS[k].fr, skill: state.skills[k], max: 300, known: [] });
+    state.profKey = k; renderChar();
+  };
+}
+const clampSkill = (v) => Math.max(1, Math.min(300, parseInt(v, 10) || 1));
+
+async function renderProf() {
+  const k = state.profKey, info = PROFESSIONS[k];
+  const p = state.char.professions.find((x) => profKeyFor(x) === k) || { known: [] };
+  const box = $("#prof");
+  const opt = (name, def) => { const v = localStorageGet("opt:" + name); return v == null ? def : v === "1"; };
+  box.innerHTML = `<section class="card"><div class="controls">
+      <div><label>Skill actuel</label><input id="skill" type="number" min="1" max="300" value="${state.skills[k]}"></div>
+      <div><label>Objectif</label><input id="target" type="number" min="2" max="300" value="${localStorageGet("target") || 300}"></div>
+      <label class="check"><input type="checkbox" id="buy" ${opt("buy", true) ? "checked" : ""}> Inclure les recettes à acheter / drop</label>
+      <label class="check"><input type="checkbox" id="sell" ${opt("sell", true) ? "checked" : ""}> Revendre les crafts à l'HV</label>
+    </div>
+    ${p.known?.length ? `<p class="note">${p.known.length} recettes connues lues sur ton perso : elles sont utilisées sans étiquette « à obtenir ».</p>` : ""}
+    </section><div id="res"><section class="card"><span class="spinner"></span> Chargement des prix…</section></div>`;
+  const rerender = () => {
+    state.skills[k] = clampSkill($("#skill").value);
+    localStorageSet("target", $("#target").value);
+    localStorageSet("opt:buy", $("#buy").checked ? "1" : "0");
+    localStorageSet("opt:sell", $("#sell").checked ? "1" : "0");
+    draw();
+  };
+  ["skill", "target", "buy", "sell"].forEach((id) => $("#" + id).addEventListener("change", rerender));
+
+  let recipes, craft;
+  try {
+    [recipes, craft] = await Promise.all([loadRecipes(), craftData($("#house").value || 17, info.id)]);
+  } catch (e) { $("#res").innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
+
+  function draw() {
+    const skill = state.skills[k];
+    const target = Math.max(skill + 1, Math.min(300, parseInt($("#target").value, 10) || 300));
+    const includeBuyable = $("#buy").checked;
+    const en = enrich(recipes[k] || [], craft.rows, { known: p.known, sell: $("#sell").checked });
+    const pl = plan(en, skill, { target, includeBuyable });
+    const gold = goldList(en, skill, { includeBuyable });
+    $("#res").innerHTML = planHTML(pl, skill, target, craft) + goldHTML(gold, skill);
+  }
+  draw();
+}
+
+const skHTML = (r) => `<span class="sk" title="orange / jaune / vert / gris"><b class="o">${r.o}</b><b class="y">${r.y}</b><b class="g">${r.g}</b><b class="x">${r.grey}</b></span>`;
+const srcTag = (r) => (r.free ? "" : r.known ? `<span class="tag">connue</span>` : `<span class="tag buy" title="${esc(r.source)}">à obtenir · ${esc(r.source)}</span>`) + (r.isNew ? `<span class="tag new">Forever</span>` : "");
+const cls = (v) => (v > 0 ? "neg" : v < 0 ? "pos" : "");
+
+function planHTML(pl, skill, target, craft) {
+  const t = pl.totals;
+  const rows = pl.steps.map((st) => {
+    if (!st.recipe) return `<tr><td class="num">${st.from} → ${st.to}</td><td colspan="5" class="neg">Aucune recette disponible avec un prix connu. Coche « recettes à acheter » ou va voir le maître.</td></tr>`;
+    const r = st.recipe;
+    return `<tr>
+      <td class="num">${st.from} → ${st.to}${st.trainer.length ? `<div class="trainer">⚑ maître à ${st.trainer.join(", ")}</div>` : ""}</td>
+      <td><span class="${r.market ? "q-" + r.market.q : ""}">${esc(r.name)}</span> ${srcTag(r)}
+          <div class="note">${skHTML(r)} · apprise à ${r.learn}${r.learnEstimated ? "*" : ""} · ${r.reagents.map((g) => `${g.qty}× ${esc(g.name)}`).join(", ")}</div></td>
+      <td class="num">${st.crafts}</td>
+      <td class="num">${money(st.cost)}</td>
+      <td class="num pos">${money(st.resale)}</td>
+      <td class="num ${cls(st.net)}">${money(st.net)}</td></tr>`;
+  }).join("");
+  const shop = pl.shopping.map(([n, q]) => `<tr><td>${esc(n)}</td><td class="num">${q}</td></tr>`).join("");
+  return `<section class="card">
+    <h3>Plan de montée ${skill} → ${target}</h3>
+    <div class="totals">
+      <div class="stat"><div class="muted">Crafts estimés</div><div class="v">${t.crafts}</div></div>
+      <div class="stat"><div class="muted">Coût des composants</div><div class="v">${money(t.cost)}</div></div>
+      <div class="stat"><div class="muted">Revente estimée</div><div class="v">${money(t.resale)}</div></div>
+      <div class="stat"><div class="muted">Coût net</div><div class="v ${cls(t.net)}">${money(t.net)}</div></div>
+    </div>
+    <p class="note">Recette choisie à chaque point : le plus faible coût net espéré (orange = 100 %, puis (gris − skill)/(gris − jaune)). Revente = valeur HV − 5 %, seulement si l'objet se vend au moins 1 fois/jour, sinon prix marchand. Prix au ${new Date(craft.as_of).toLocaleString("fr-CA")}.</p>
+    <div class="scroll"><table><thead><tr><th class="num">Skill</th><th>Recette</th><th class="num">Crafts</th><th class="num">Coût</th><th class="num">Revente</th><th class="num">Net</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <details><summary>Liste d'achats (${pl.shopping.length} composants)</summary><table><tbody>${shop}</tbody></table></details>
+  </section>`;
+}
+
+function goldHTML(list, skill) {
+  const rows = list.slice(0, 40).map((x) => `<tr>
+    <td><span class="q-${x.r.market.q}">${esc(x.r.name)}</span> ${srcTag(x.r)}<div class="note">${esc(x.r.market.cat || "")}</div></td>
+    <td class="num">${money(x.cost)}</td><td class="num">${money(x.value)}</td>
+    <td class="num pos">${money(x.profit)}</td><td class="num">${x.roi == null ? "—" : Math.round(x.roi * 100) + " %"}</td>
+    <td class="num">${x.spd >= 10 ? Math.round(x.spd) : (x.spd || 0).toFixed(1)}</td>
+    <td class="num pos">${money(x.perDay)}</td></tr>`).join("");
+  return `<section class="card"><h3>Faire du gold au skill ${skill}</h3>
+    <p class="note">Recettes que tu peux faire maintenant, avec profit positif (valeur HV − coût des composants, calcul Forever AH). « Potentiel/jour » = profit × ventes/jour estimées, plafonné à 10 ventes pour rester réaliste.</p>
+    ${list.length ? `<div class="scroll"><table><thead><tr><th>Recette</th><th class="num">Coût</th><th class="num">Valeur</th><th class="num">Profit</th><th class="num">ROI</th><th class="num">Ventes/j</th><th class="num">Potentiel/j</th></tr></thead><tbody>${rows}</tbody></table></div>`
+      : `<p class="muted">Rien de rentable à ce skill pour l'instant.</p>`}
+  </section>`;
+}
+
+// ---------- actions ----------
+async function search(e) {
+  e?.preventDefault();
+  const name = $("#name").value.trim(), region = $("#region").value;
+  if (!name) return;
+  localStorageSet("house:" + region, $("#house").value);
+  history.replaceState(null, "", `?name=${encodeURIComponent(name)}&region=${region}&house=${$("#house").value}`);
+  out.innerHTML = `<section class="card"><span class="spinner"></span> Recherche de ${esc(name)}…</section>`;
+  try {
+    state.char = await api(`/api/character?name=${encodeURIComponent(name)}&region=${region}`);
+    state.skills = {}; state.profKey = null;
+    renderChar();
+  } catch (err) {
+    out.innerHTML = `<div class="err">${esc(err.message)}</div>`;
+  }
+}
+
+$("#f").addEventListener("submit", search);
+$("#region").addEventListener("change", fillHouses);
+$("#house").addEventListener("change", () => { localStorageSet("house:" + $("#region").value, $("#house").value); if (state.profKey) renderProf(); });
+$("#manual").onclick = (e) => { e.preventDefault(); state.char = { name: "Mode manuel", professions: [] }; state.skills = {}; state.profKey = null; renderChar(); pickOther(); };
+
+const q = new URLSearchParams(location.search);
+if (q.get("region")) $("#region").value = q.get("region");
+await loadHouses();
+if (q.get("house")) $("#house").value = q.get("house");
+if (q.get("name")) { $("#name").value = q.get("name"); search(); }
+</script>
+</body>
+</html>

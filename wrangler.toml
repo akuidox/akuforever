@@ -1,0 +1,19 @@
+name = "forever-crafter"
+main = "src/worker.js"
+compatibility_date = "2026-11-01"
+
+# Le site statique (public/) est servi par le Worker ; /api/* passe par src/worker.js
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+# Cache des prix (recommandé) : npx wrangler kv namespace create CACHE
+# puis décommente et colle l'id affiché :
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "COLLE_L_ID_ICI"
+
+# Secrets (ne jamais les mettre ici) :
+#   npx wrangler secret put BNET_CLIENT_ID
+#   npx wrangler secret put BNET_CLIENT_SECRET
